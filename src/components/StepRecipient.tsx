@@ -12,7 +12,7 @@ const slideIn = {
   initial: { opacity: 0, x: 80 },
   animate: { opacity: 1, x: 0 },
   exit: { opacity: 0, x: -80 },
-  transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+  transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] },
 };
 
 const StepRecipient = ({ value, onChange, onNext, onBack }: StepRecipientProps) => {
