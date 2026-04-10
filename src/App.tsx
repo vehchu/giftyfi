@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import GiftAnimation from './GiftAnimation'
+import WaveBackground from './WaveBackground'
 
 interface Track {
   name: string
@@ -35,8 +36,11 @@ function GiftReveal({ code }: { code: string }) {
   useEffect(() => {
     fetch(`/api/gift/${code}`)
       .then(r => r.json())
-      .then(d => setTrack(d.song ?? null))
-      .finally(() => setLoading(false))
+      .then(d => {
+        setTrack(d.song ?? null)
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
   }, [code])
 
   function togglePreview() {
@@ -62,21 +66,25 @@ function GiftReveal({ code }: { code: string }) {
   }
 
   return (
-    <Screen>
+    <div className="relative z-10 min-h-screen flex items-center justify-center p-4 overflow-x-hidden">
       <div className="w-full max-w-sm animate-fade-in-up">
-        <p className="text-center text-zinc-500 text-sm mb-6">🎁 Someone sent you a song</p>
         <div className="rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl shadow-purple-950/40">
           {track.image_url && (
             <div className="relative">
               <img src={track.image_url} alt={track.album} className="w-full aspect-square object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-transparent to-transparent" />
-              {track.preview_url && (
+              <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-transparent to-transparent z-10" />
+              {track.preview_url ? (
                 <button
                   onClick={togglePreview}
-                  className="absolute bottom-4 right-4 w-12 h-12 bg-purple-600 hover:bg-purple-500 rounded-full flex items-center justify-center text-lg shadow-lg transition-all hover:scale-110"
+                  className="absolute bottom-4 right-4 w-12 h-12 bg-purple-600 hover:bg-purple-500 rounded-full flex items-center justify-center text-lg text-white shadow-xl transition-all hover:scale-110 z-50 border-2 border-white/20"
+                  title="Play Preview"
                 >
                   {playing ? '⏸' : '▶'}
                 </button>
+              ) : (
+                <div className="absolute bottom-4 right-4 text-[10px] text-zinc-500 bg-black/40 backdrop-blur-md px-2 py-1 rounded-md z-20 border border-white/5">
+                  No preview available
+                </div>
               )}
             </div>
           )}
@@ -84,7 +92,7 @@ function GiftReveal({ code }: { code: string }) {
             <h1 className="text-2xl font-bold text-white tracking-tight">{track.name}</h1>
             <p className="text-zinc-400 mt-1 font-medium">{track.artist}</p>
             <p className="text-zinc-600 text-sm mt-0.5">{track.album}{track.duration_ms ? ` • ${ms(track.duration_ms)}` : ''}</p>
-            
+
             {track.note && (
               <div className="mt-6 pt-5 border-t border-white/10">
                 <p className="text-zinc-300 text-sm leading-relaxed italic whitespace-pre-wrap break-words">"{track.note}"</p>
@@ -103,10 +111,80 @@ function GiftReveal({ code }: { code: string }) {
                 ▶ Open on Spotify
               </a>
             )}
+            <button
+              onClick={() => window.location.href = '/'}
+              className="mt-4 w-full py-3 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white border border-white/10 rounded-xl transition-all text-xs font-semibold uppercase tracking-widest text-center"
+            >
+              Create your own gift →
+            </button>
           </div>
         </div>
       </div>
-    </Screen>
+    </div>
+  )
+}
+
+// ── Magic Button ───────────────────────────────────────────────────────────────
+function MagicButton({ onClick, children, disabled }: { onClick: () => void, children: React.ReactNode, disabled?: boolean }) {
+  const container = useRef<HTMLDivElement>(null)
+  const [particles, setParticles] = useState<number[]>([])
+
+  function handleHover() {
+    if (disabled) return
+    const id = Date.now()
+    setParticles(prev => [...prev, id])
+    setTimeout(() => {
+      setParticles(prev => prev.filter(p => p !== id))
+    }, 1500)
+  }
+
+  return (
+    <div className="relative group" ref={container} onMouseEnter={handleHover}>
+      {/* Particles Layer */}
+      <div className="absolute inset-0 pointer-events-none overflow-visible">
+        {particles.map(id => (
+          <MusicNotes key={id} />
+        ))}
+      </div>
+
+      <button
+        onClick={onClick}
+        disabled={disabled}
+        className="relative w-full px-8 py-3.5 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white rounded-full font-bold text-base transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] border-t border-white/30 flex items-center justify-center gap-3 overflow-hidden"
+      >
+        <span className="relative z-10">{children}</span>
+        {/* Internal Glow */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+      </button>
+    </div>
+  )
+}
+
+function MusicNotes() {
+  const notes = ['♪', '♫', '♬', '♩', '🎶']
+  return (
+    <>
+      {[...Array(8)].map((_, i) => {
+        const angle = (i / 8) * Math.PI * 2
+        const x = Math.cos(angle) * 100
+        const y = Math.sin(angle) * 100
+        const note = notes[i % notes.length]
+        return (
+          <div
+            key={i}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-purple-400/60 pointer-events-none animate-note-spread"
+            style={{
+              '--x': `${x}px`,
+              '--y': `${y}px`,
+              '--s': 0.5 + Math.random(),
+              '--r': `${Math.random() * 360}deg`,
+            } as any}
+          >
+            {note}
+          </div>
+        )
+      })}
+    </>
   )
 }
 
@@ -179,13 +257,8 @@ function SearchApp() {
   }
 
   return (
-    <div className="min-h-screen bg-[#09090f] text-white relative overflow-x-hidden">
-      {/* ambient glow */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-purple-900/20 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative max-w-xl mx-auto px-4 py-16">
+    <div className="relative z-10 min-h-screen flex items-center justify-center p-4 overflow-x-hidden">
+      <div className="relative w-full max-w-xl bg-black/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-purple-950/20 my-12 anim-fade-in">
         {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-5xl font-extrabold tracking-tight mb-2">
@@ -205,13 +278,12 @@ function SearchApp() {
             onChange={e => setQuery(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && search()}
           />
-          <button
+          <MagicButton
             onClick={search}
             disabled={phase === 'searching' || phase === 'gifting'}
-            className="px-5 py-3.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 rounded-2xl font-semibold text-sm transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-900/40 whitespace-nowrap"
           >
             {phase === 'searching' ? <Spin /> : 'Search'}
-          </button>
+          </MagicButton>
         </div>
 
         {/* Error */}
@@ -290,12 +362,11 @@ function SearchApp() {
               >
                 Back
               </button>
-              <button
-                onClick={gift}
-                className="flex-1 px-5 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 rounded-xl font-semibold text-sm transition-all hover:-translate-y-0.5 shadow-lg shadow-purple-900/40"
-              >
-                Generate Gift Link ✨
-              </button>
+              <div className="flex-1">
+                <MagicButton onClick={gift}>
+                  Generate Gift Link ✨
+                </MagicButton>
+              </div>
             </div>
           </div>
         )}
@@ -369,7 +440,7 @@ function Loader() {
 }
 function Screen({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#09090f] flex items-center justify-center p-4 text-white">
+    <div className="min-h-screen flex items-center justify-center p-4 text-white">
       {children}
     </div>
   )
@@ -378,5 +449,10 @@ function Screen({ children }: { children: React.ReactNode }) {
 // ── Root ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const code = giftCode()
-  return code ? <GiftReveal code={code} /> : <SearchApp />
+  return (
+    <>
+
+      {code ? <GiftReveal code={code} /> : <SearchApp />}
+    </>
+  )
 }

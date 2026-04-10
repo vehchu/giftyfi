@@ -1,4 +1,4 @@
-import { getSpotifyToken, searchTracks, formatTrack } from './_lib/spotify.js'
+import { getSpotifyToken, searchTracks, formatTrack, getiTunesPreview } from './_lib/spotify.js'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -22,7 +22,16 @@ export default async function handler(req, res) {
     if (!items) return res.status(500).json({ error: 'Spotify search failed' })
     if (!items.length) return res.status(404).json({ error: 'No tracks found' })
 
-    return res.status(200).json({ tracks: items.map(formatTrack) })
+    const tracks = await Promise.all(items.map(async (item) => {
+      const track = formatTrack(item)
+      // If Spotify didn't provide a preview, try iTunes fallback
+      if (!track.preview_url) {
+        track.preview_url = await getiTunesPreview(track.artist, track.name)
+      }
+      return track
+    }))
+
+    return res.status(200).json({ tracks })
   } catch (err) {
     console.error('/api/search error:', err)
     return res.status(500).json({ error: 'Internal server error' })

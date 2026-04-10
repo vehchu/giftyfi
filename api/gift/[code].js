@@ -1,4 +1,5 @@
 import { db } from '../_lib/firebase.js';
+import { getiTunesPreview } from '../_lib/spotify.js';
 
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
@@ -23,20 +24,27 @@ export default async function handler(req, res) {
 
     const track = snap.data();
 
+    const song = {
+      name:         track.name,
+      artist:       track.artist,
+      album:        track.album,
+      image_url:    track.image_url,
+      spotify_url:  track.spotify_url,
+      preview_url:  track.preview_url,
+      duration_ms:  track.duration_ms,
+      release_date: track.release_date,
+      sender:       track.sender || null,
+      note:         track.message || null,
+    };
+
+    // Repair preview if missing
+    if (!song.preview_url) {
+      song.preview_url = await getiTunesPreview(song.artist, song.name);
+    }
+
     return res.status(200).json({
       message: '🎵 Someone sent you a song!',
-      song: {
-        name:         track.name,
-        artist:       track.artist,
-        album:        track.album,
-        image_url:    track.image_url,
-        spotify_url:  track.spotify_url,
-        preview_url:  track.preview_url,
-        duration_ms:  track.duration_ms,
-        release_date: track.release_date,
-        sender:       track.sender || null,
-        note:         track.message || null,
-      },
+      song,
     });
 
   } catch (err) {

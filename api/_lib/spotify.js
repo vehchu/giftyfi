@@ -50,4 +50,17 @@ export function formatTrack(track) {
   };
 }
 
+export async function getiTunesPreview(artist, trackName) {
+  try {
+    const query = encodeURIComponent(`${artist} ${trackName}`);
+    const res = await fetch(`https://itunes.apple.com/search?term=${query}&entity=song&limit=1`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.results?.[0]?.previewUrl ?? null;
+  } catch (err) {
+    console.error('iTunes preview error:', err);
+    return null;
+  }
+}
+
 

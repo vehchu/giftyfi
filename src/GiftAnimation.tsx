@@ -91,7 +91,7 @@ export default function GiftAnimation({ onComplete }: GiftAnimationProps) {
   }, [])
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#09090f] overflow-hidden">
+    <div className="flex items-center justify-center min-h-screen overflow-hidden">
       {/* Container holding both parts of the gift */}
       <div
         ref={containerRef}
