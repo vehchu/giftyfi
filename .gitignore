@@ -23,10 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
-# Environment variables — NEVER commit this
 .env
+.cache
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
+.vercel
