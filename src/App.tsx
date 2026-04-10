@@ -314,9 +314,20 @@ function SearchApp() {
               </div>
             )}
             <div className="p-6 -mt-10 relative">
-              <p className="font-bold text-xl text-white">{picked.name}</p>
-              <p className="text-zinc-400 text-sm mt-0.5">{picked.artist}</p>
-              <p className="text-zinc-600 text-xs mt-0.5 mb-5">{picked.album}</p>
+              {message && (
+                <div className="mb-4 pt-2">
+                  <p className="text-zinc-300 text-sm leading-relaxed italic">"{message}"</p>
+                  {sender && (
+                    <p className="text-purple-400 text-xs font-semibold mt-2">— From {sender}</p>
+                  )}
+                </div>
+              )}
+              
+              <div className="pt-2 border-t border-white/5">
+                <p className="font-bold text-xl text-white">{picked.name}</p>
+                <p className="text-zinc-400 text-sm mt-0.5">{picked.artist}</p>
+                <p className="text-zinc-600 text-xs mt-0.5 mb-5">{picked.album}</p>
+              </div>
 
               <div className="bg-purple-950/40 border border-purple-800/30 rounded-2xl p-4">
                 <p className="text-purple-400 text-xs font-semibold uppercase tracking-widest mb-3">🎁 Gift Link</p>

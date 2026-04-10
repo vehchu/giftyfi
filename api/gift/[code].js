@@ -25,8 +25,6 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       message: '🎵 Someone sent you a song!',
-      sender: track.sender || null,
-      note: track.message || null,
       song: {
         name:         track.name,
         artist:       track.artist,
@@ -36,6 +34,8 @@ export default async function handler(req, res) {
         preview_url:  track.preview_url,
         duration_ms:  track.duration_ms,
         release_date: track.release_date,
+        sender:       track.sender || null,
+        note:         track.message || null,
       },
     });
 
