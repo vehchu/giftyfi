@@ -25,13 +25,13 @@ export default function GiftAnimation({ onComplete }: GiftAnimationProps) {
       duration: 0.08,
       ease: 'power1.inOut'
     })
-    
+
     // Set rotation back to 0 just to be clean
     tl.to(containerRef.current, { rotation: 0, duration: 0.05 })
 
     // 3. Pop the lid off (lifts up and rotates out of view)
     tl.to(topRef.current, {
-      y: -150,
+      y: -170,
       rotation: 25,
       opacity: 0,
       duration: 0.7,
@@ -52,23 +52,23 @@ export default function GiftAnimation({ onComplete }: GiftAnimationProps) {
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#09090f]">
       {/* Container holding both parts of the gift */}
-      <div 
-        ref={containerRef} 
+      <div
+        ref={containerRef}
         className="relative w-64 h-64 flex items-center justify-center"
       >
         {/* Bottom Box */}
-        <img 
+        <img
           ref={bottomRef}
-          src="/media/gBottom.svg" 
-          alt="Gift Box" 
+          src="/media/gBottom.svg"
+          alt="Gift Box"
           className="absolute bottom-8 w-3/4 object-contain origin-bottom"
         />
-        
+
         {/* Top Lid */}
-        <img 
+        <img
           ref={topRef}
-          src="/media/gTop.svg" 
-          alt="Gift Lid" 
+          src="/media/gTop.svg"
+          alt="Gift Lid"
           className="absolute top-4 w-[85%] z-10 object-contain origin-center"
         />
       </div>
