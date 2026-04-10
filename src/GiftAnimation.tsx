@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import { MotionPathPlugin } from 'gsap/MotionPathPlugin'
 
-gsap.registerPlugin(MotionPathPlugin)
+import gTop from '../media/gTop.svg'
+import gBottom from '../media/gBottom.svg'
 
 interface GiftAnimationProps {
   onComplete: () => void;
@@ -62,7 +62,7 @@ export default function GiftAnimation({ onComplete }: GiftAnimationProps) {
         {/* Bottom Box */}
         <img 
           ref={bottomRef}
-          src="/media/gBottom.svg" 
+          src={gBottom} 
           alt="Gift Box" 
           className="absolute bottom-8 w-3/4 object-contain origin-bottom"
         />
@@ -70,7 +70,7 @@ export default function GiftAnimation({ onComplete }: GiftAnimationProps) {
         {/* Top Lid */}
         <img 
           ref={topRef}
-          src="/media/gTop.svg" 
+          src={gTop} 
           alt="Gift Lid" 
           className="absolute top-4 w-[85%] z-10 object-contain origin-center"
         />
