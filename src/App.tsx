@@ -74,22 +74,19 @@ function GiftReveal({ code }: { code: string }) {
               )}
             </div>
           )}
-          <div className="p-6 -mt-8 relative">
+          <div className="p-6 -mt-8 relative drop-shadow-xl">
+            <h1 className="text-2xl font-bold text-white tracking-tight">{track.name}</h1>
+            <p className="text-zinc-400 mt-1 font-medium">{track.artist}</p>
+            <p className="text-zinc-600 text-sm mt-0.5">{track.album}{track.duration_ms ? ` • ${ms(track.duration_ms)}` : ''}</p>
+            
             {track.note && (
-              <div className="mb-4 pt-2">
-                <p className="text-zinc-300 text-sm leading-relaxed italic">"{track.note}"</p>
+              <div className="mt-6 pt-5 border-t border-white/10">
+                <p className="text-zinc-300 text-sm leading-relaxed italic whitespace-pre-wrap break-words">"{track.note}"</p>
                 {track.sender && (
-                  <p className="text-purple-400 text-xs font-semibold mt-2">— From {track.sender}</p>
+                  <p className="text-purple-400 text-xs font-bold mt-3 tracking-wide uppercase">— From {track.sender}</p>
                 )}
               </div>
             )}
-
-            <div className="pt-2 border-t border-white/5">
-              <h1 className="text-2xl font-bold text-white">{track.name}</h1>
-              <p className="text-zinc-400 mt-1">{track.artist}</p>
-              <p className="text-zinc-600 text-sm mt-0.5 mt-0.5">{track.album}</p>
-              {track.duration_ms && <p className="text-zinc-700 text-xs mt-0.5">{ms(track.duration_ms)}</p>}
-            </div>
             {track.spotify_url && (
               <a
                 href={track.spotify_url}
@@ -313,21 +310,20 @@ function SearchApp() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/20 to-transparent" />
               </div>
             )}
-            <div className="p-10 -mt-10 relative">
+
+            <div className="p-6 -mt-10 relative drop-shadow-xl">
+              <p className="font-bold text-xl text-white tracking-tight">{picked.name}</p>
+              <p className="text-zinc-400 text-sm mt-0.5 font-medium">{picked.artist}</p>
+              <p className="text-zinc-600 text-xs mt-0.5 mb-5">{picked.album}</p>
+
               {message && (
-                <div className="mb-4 pt-2">
-                  <p className="text-zinc-300 text-sm leading-relaxed italic">"{message}"</p>
+                <div className="mb-6 pt-5 border-t border-white/10">
+                  <p className="text-zinc-300 text-sm leading-relaxed italic whitespace-pre-wrap break-words">"{message}"</p>
                   {sender && (
-                    <p className="text-purple-400 text-xs font-semibold mt-2">— From {sender}</p>
+                    <p className="text-purple-400 text-xs font-bold mt-3 tracking-wide uppercase">— From {sender}</p>
                   )}
                 </div>
               )}
-
-              <div className="pt-2 border-t border-white/5">
-                <p className="font-bold text-xl text-white">{picked.name}</p>
-                <p className="text-zinc-400 text-sm mt-0.5">{picked.artist}</p>
-                <p className="text-zinc-600 text-xs mt-0.5 mb-5">{picked.album}</p>
-              </div>
 
               <div className="bg-purple-950/40 border border-purple-800/30 rounded-2xl p-4">
                 <p className="text-purple-400 text-xs font-semibold uppercase tracking-widest mb-3">🎁 Gift Link</p>
