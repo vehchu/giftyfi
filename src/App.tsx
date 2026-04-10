@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import GiftAnimation from './GiftAnimation'
-import WaveBackground from './WaveBackground'
+
 
 interface Track {
   name: string
