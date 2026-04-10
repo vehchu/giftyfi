@@ -1,4 +1,4 @@
-const { db } = require('../_lib/firebase');
+import { db } from '../_lib/firebase.js';
 
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
@@ -6,7 +6,7 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   Object.entries(CORS).forEach(([k, v]) => res.setHeader(k, v));
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET')    return res.status(405).json({ error: 'Method not allowed' });

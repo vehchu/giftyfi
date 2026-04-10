@@ -14,4 +14,4 @@ function toBase62(num) {
   return result;
 }
 
-module.exports = { toBase62 };
+export { toBase62 };

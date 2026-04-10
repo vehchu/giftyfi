@@ -1,4 +1,4 @@
-async function getSpotifyToken() {
+export async function getSpotifyToken() {
   const authStr = Buffer.from(
     `${process.env.CLIENT?.trim()}:${process.env.SEKWET?.trim()}`
   ).toString('base64');
@@ -21,8 +21,8 @@ async function getSpotifyToken() {
   return data.access_token;
 }
 
-async function searchTracks(token, query) {
-  const params = new URLSearchParams({ q: query, type: 'track', limit: 5 });
+export async function searchTracks(token, query) {
+  const params = new URLSearchParams({ q: query, type: 'track', limit: '8' });
   const res = await fetch(`https://api.spotify.com/v1/search?${params}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -36,7 +36,7 @@ async function searchTracks(token, query) {
   return data.tracks?.items ?? [];
 }
 
-function formatTrack(track) {
+export function formatTrack(track) {
   const album = track.album ?? {};
   return {
     name:         track.name ?? 'Unknown Title',
@@ -50,4 +50,4 @@ function formatTrack(track) {
   };
 }
 
-module.exports = { getSpotifyToken, searchTracks, formatTrack };
+

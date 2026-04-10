@@ -1,4 +1,4 @@
-const admin = require('firebase-admin');
+import admin from 'firebase-admin';
 
 // Singleton — reused across warm invocations
 if (!admin.apps.length) {
@@ -12,6 +12,4 @@ if (!admin.apps.length) {
   });
 }
 
-const db = admin.firestore();
-
-module.exports = { db };
+export const db = admin.firestore();
