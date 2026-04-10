@@ -313,7 +313,7 @@ function SearchApp() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/20 to-transparent" />
               </div>
             )}
-            <div className="p-20 -mt-10 relative">
+            <div className="p-10 -mt-10 relative">
               {message && (
                 <div className="mb-4 pt-2">
                   <p className="text-zinc-300 text-sm leading-relaxed italic">"{message}"</p>
