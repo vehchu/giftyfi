@@ -9,6 +9,8 @@ interface Track {
   preview_url: string | null
   duration_ms: number | null
   release_date: string | null
+  sender?: string | null
+  note?: string | null
 }
 
 function giftCode(): string | null {
@@ -73,10 +75,21 @@ function GiftReveal({ code }: { code: string }) {
             </div>
           )}
           <div className="p-6 -mt-8 relative">
-            <h1 className="text-2xl font-bold text-white">{track.name}</h1>
-            <p className="text-zinc-400 mt-1">{track.artist}</p>
-            <p className="text-zinc-600 text-sm mt-0.5">{track.album}</p>
-            {track.duration_ms && <p className="text-zinc-700 text-xs mt-0.5">{ms(track.duration_ms)}</p>}
+            {track.note && (
+              <div className="mb-4 pt-2">
+                <p className="text-zinc-300 text-sm leading-relaxed italic">"{track.note}"</p>
+                {track.sender && (
+                  <p className="text-purple-400 text-xs font-semibold mt-2">— From {track.sender}</p>
+                )}
+              </div>
+            )}
+            
+            <div className="pt-2 border-t border-white/5">
+              <h1 className="text-2xl font-bold text-white">{track.name}</h1>
+              <p className="text-zinc-400 mt-1">{track.artist}</p>
+              <p className="text-zinc-600 text-sm mt-0.5 mt-0.5">{track.album}</p>
+              {track.duration_ms && <p className="text-zinc-700 text-xs mt-0.5">{ms(track.duration_ms)}</p>}
+            </div>
             {track.spotify_url && (
               <a
                 href={track.spotify_url}
@@ -95,13 +108,17 @@ function GiftReveal({ code }: { code: string }) {
 }
 
 // ── Search App ─────────────────────────────────────────────────────────────────
-type Phase = 'idle' | 'searching' | 'results' | 'gifting' | 'done'
+type Phase = 'idle' | 'searching' | 'results' | 'compose' | 'gifting' | 'done'
 
 function SearchApp() {
   const [query, setQuery] = useState('')
   const [phase, setPhase] = useState<Phase>('idle')
   const [tracks, setTracks] = useState<Track[]>([])
   const [picked, setPicked] = useState<Track | null>(null)
+  
+  const [sender, setSender] = useState('')
+  const [message, setMessage] = useState('')
+  
   const [giftLink, setGiftLink] = useState('')
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
@@ -125,13 +142,18 @@ function SearchApp() {
     }
   }
 
-  async function gift(track: Track) {
-    setPicked(track); setPhase('gifting')
+  function pickTrack(track: Track) {
+    setPicked(track)
+    setPhase('compose')
+  }
+
+  async function gift() {
+    setPhase('gifting')
     try {
       const r = await fetch('/api/gift', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ track }),
+        body: JSON.stringify({ track: picked, sender, message }),
       })
       const d = await r.json()
       if (!r.ok) throw new Error(d.error || 'Failed to create gift')
@@ -139,7 +161,7 @@ function SearchApp() {
       setPhase('done')
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Error')
-      setPhase('results')
+      setPhase('compose')
     }
   }
 
@@ -150,7 +172,7 @@ function SearchApp() {
   }
 
   function reset() {
-    setPhase('idle'); setQuery(''); setTracks([]); setPicked(null); setError('')
+    setPhase('idle'); setQuery(''); setTracks([]); setPicked(null); setError(''); setSender(''); setMessage('')
   }
 
   return (
@@ -206,7 +228,7 @@ function SearchApp() {
               {tracks.map((t, i) => (
                 <button
                   key={i}
-                  onClick={() => gift(t)}
+                  onClick={() => pickTrack(t)}
                   className="w-full flex items-center gap-4 p-3.5 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] hover:border-purple-500/30 rounded-2xl transition-all text-left group"
                 >
                   {t.image_url
@@ -219,10 +241,58 @@ function SearchApp() {
                     <p className="text-zinc-600 text-xs truncate mt-0.5">{t.album}</p>
                   </div>
                   <span className="text-purple-400 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity pr-1 flex-shrink-0">
-                    Gift →
+                    Select →
                   </span>
                 </button>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Compose message */}
+        {phase === 'compose' && picked && (
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
+            <h2 className="text-xl font-bold text-white mb-1">Add a message</h2>
+            <p className="text-zinc-400 text-sm mb-6">You selected <strong>{picked.name}</strong></p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-zinc-500 text-xs font-semibold mb-1 uppercase tracking-wider">From (Optional)</label>
+                <input
+                  maxLength={50}
+                  value={sender}
+                  onChange={e => setSender(e.target.value)}
+                  placeholder="Your name"
+                  className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-zinc-500 text-xs font-semibold mb-1 uppercase tracking-wider">Note (Optional)</label>
+                <textarea
+                  maxLength={100}
+                  rows={3}
+                  value={message}
+                  onChange={e => setMessage(e.target.value)}
+                  placeholder="Write something sweet..."
+                  className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors resize-none"
+                />
+                <p className="text-right text-xs text-zinc-600 mt-1">{message.length}/100</p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button 
+                onClick={() => setPhase('results')}
+                className="px-5 py-3 rounded-xl text-sm font-semibold text-zinc-400 hover:text-white transition-colors"
+              >
+                Back
+              </button>
+              <button
+                onClick={gift}
+                className="flex-1 px-5 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 rounded-xl font-semibold text-sm transition-all hover:-translate-y-0.5 shadow-lg shadow-purple-900/40"
+              >
+                Generate Gift Link ✨
+              </button>
             </div>
           </div>
         )}

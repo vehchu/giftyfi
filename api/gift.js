@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
   try {
-    const { track } = req.body ?? {}
+    const { track, sender, message } = req.body ?? {}
     if (!track?.name) return res.status(400).json({ error: 'Track required' })
 
     // Atomic increment → unique base62 shortcode
@@ -31,6 +31,8 @@ export default async function handler(req, res) {
 
     await db.collection('gifts').doc(shortcode).set({
       ...track,
+      sender: sender?.substring(0, 50) || null,
+      message: message?.substring(0, 100) || null,
       created_at: new Date().toISOString(),
     })
 
