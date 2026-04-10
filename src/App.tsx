@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import GiftAnimation from './GiftAnimation'
 
 interface Track {
   name: string
@@ -27,6 +28,7 @@ function ms(d: number | null) {
 function GiftReveal({ code }: { code: string }) {
   const [track, setTrack] = useState<Track | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showAnimation, setShowAnimation] = useState(true)
   const [playing, setPlaying] = useState(false)
   const audio = useRef(new Audio())
 
@@ -55,9 +57,13 @@ function GiftReveal({ code }: { code: string }) {
     <Screen><p className="text-zinc-500">Gift not found.</p></Screen>
   )
 
+  if (showAnimation) {
+    return <GiftAnimation onComplete={() => setShowAnimation(false)} />
+  }
+
   return (
     <Screen>
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-sm animate-fade-in-up">
         <p className="text-center text-zinc-500 text-sm mb-6">🎁 Someone sent you a song</p>
         <div className="rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl shadow-purple-950/40">
           {track.image_url && (
