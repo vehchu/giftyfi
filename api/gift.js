@@ -22,7 +22,9 @@ export default async function handler(req, res) {
 
     await db.runTransaction(async (tx) => {
       const snap = await tx.get(counterRef)
-      const next = (snap.exists ? snap.data().value : 0) + 1
+      let current = snap.exists ? snap.data().value : 0
+      if (current < 100000000000) current = 100000000000
+      const next = current + 1
       tx.set(counterRef, { value: next })
       shortcode = toBase62(next)
     })
