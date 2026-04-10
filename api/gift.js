@@ -36,7 +36,8 @@ export default async function handler(req, res) {
       created_at: new Date().toISOString(),
     })
 
-    const baseUrl = `https://${req.headers.host}`
+    const protocol = req.headers['x-forwarded-proto'] || (req.headers.host.includes('localhost') ? 'http' : 'https')
+    const baseUrl = `${protocol}://${req.headers.host}`
     return res.status(200).json({
       gift_link: `${baseUrl}/gift/${shortcode}`,
       link_id: shortcode,
