@@ -23,40 +23,41 @@ function giftCode(): string | null {
 }
 
 function BackgroundGradient() {
+  const tri = 'polygon(50% 0%, 100% 100%, 0% 100%)'
+  // Each triangle: outer div = blur + position, inner div = clipPath + color
+  // This is the only pattern that works correctly on iOS Safari
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-[-1] bg-[var(--black)] flex items-end justify-center">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 470 290"
-        fill="none"
-        className="w-full min-w-[100vw] sm:min-w-[428px] h-[90vh] sm:h-auto opacity-80"
-        preserveAspectRatio="xMidYMax slice"
-      >
-        <g filter="url(#filter0_fn_16_333)">
-          <path d="M386.531 193.523L526.924 470.272H246.139L386.531 193.523Z" fill="#9701E8" />
-          <path d="M35.9953 288.352L123.41 455.052H-51.4189L35.9953 188.352Z" fill="#FF651A" />
-          <path d="M176.157 128.3L336.272 453.967H16.0422L176.157 128.3Z" fill="#F0142B" />
-          <path d="M285.594 251.748L373.008 519.385H198.18L285.594 151.748Z" fill="#EA14AE" />
-        </g>
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-[-1] bg-[var(--black)]">
+      {/* Red */}
+      <div style={{ position: 'absolute', bottom: '-10%', left: '0%', width: '55%', height: '75%', filter: 'blur(100px)' }}>
+        <div style={{ width: '100%', height: '100%', background: 'var(--red)', clipPath: tri, opacity: 0.85 }} />
+      </div>
+      {/* Pink */}
+      <div style={{ position: 'absolute', bottom: '-10%', left: '30%', width: '45%', height: '60%', filter: 'blur(100px)' }}>
+        <div style={{ width: '100%', height: '100%', background: 'var(--pink)', clipPath: tri, opacity: 0.80 }} />
+      </div>
+      {/* Purple */}
+      <div style={{ position: 'absolute', bottom: '-10%', right: '-5%', width: '50%', height: '75%', filter: 'blur(100px)' }}>
+        <div style={{ width: '100%', height: '100%', background: 'var(--purple)', clipPath: tri, opacity: 0.85 }} />
+      </div>
+      {/* Orange */}
+      <div style={{ position: 'absolute', bottom: '-5%', left: '-10%', width: '40%', height: '50%', filter: 'blur(100px)' }}>
+        <div style={{ width: '100%', height: '100%', background: 'var(--orange)', clipPath: tri, opacity: 0.55 }} />
+      </div>
+      {/* Grain — dark-based, overlay blend, gamma-corrected to skew near black */}
+      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', mixBlendMode: 'overlay', opacity: 0.6 }}>
         <defs>
-          <filter id="filter0_fn_16_333" x="-179.719" y="0" width="834.943" height="590.685" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-            <feFlood floodOpacity="0" result="BackgroundImageFix" />
-            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-            <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_16_333" />
-            <feTurbulence type="fractalNoise" baseFrequency="2 2" stitchTiles="stitch" numOctaves="3" result="noise" seed="7089" />
-            <feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise" />
-            <feComponentTransfer in="alphaNoise" result="coloredNoise1">
-              <feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " />
+          <filter id="grain" x="0%" y="0%" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" result="noise" />
+            <feColorMatrix type="saturate" values="0" in="noise" result="grey" />
+            <feComponentTransfer in="grey">
+              <feFuncR type="gamma" amplitude="2" exponent="3" offset="0" />
+              <feFuncG type="gamma" amplitude="1" exponent="3" offset="0" />
+              <feFuncB type="gamma" amplitude="3" exponent="3" offset="0" />
             </feComponentTransfer>
-            <feComposite operator="in" in2="effect1_foregroundBlur_16_333" in="coloredNoise1" result="noise1Clipped" />
-            <feFlood floodColor="rgba(0, 0, 0, 0.25)" result="color1Flood" />
-            <feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1" />
-            <feMerge result="effect2_noise_16_333">
-              <feMergeNode in="effect1_foregroundBlur_16_333" />
-              <feMergeNode in="color1" />
-            </feMerge>
           </filter>
         </defs>
+        <rect width="100%" height="100%" filter="url(#grain)" />
       </svg>
     </div>
   )
@@ -403,7 +404,7 @@ function SearchApp() {
                     />
                     <button
                       onClick={copy}
-                      className={`px-5 py-2 rounded-3xl text-xs font-bold transition-all flex-shrink-0 ${copied ? 'bg-[var(--black)] text-[var(--black)]' : 'bg-[var(--purple)] hover:bg-purple-500 text-[var(--white)]'
+                      className={`px-5 py-2 rounded-3xl text-xs font-bold transition-all flex-shrink-0 ${copied ? 'bg-[var(--white)] text-[var(--purple)]' : 'bg-[var(--purple)] hover:bg-purple-500 text-[var(--white)]'
                         }`}
                     >
                       {copied ? 'Copied!' : 'Copy'}
