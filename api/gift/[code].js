@@ -34,6 +34,7 @@ export default async function handler(req, res) {
       duration_ms:  track.duration_ms,
       release_date: track.release_date,
       sender:       track.sender || null,
+      recipient:    track.recipient || null,
       note:         track.message || null,
     };
 
