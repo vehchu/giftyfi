@@ -110,7 +110,7 @@ export default function GiftAnimation({ onComplete }: GiftAnimationProps) {
         {/* Bottom Box */}
         <img
           ref={bottomRef}
-          src="/media/gBottom.svg"
+          src="/gBottom.svg"
           alt="Gift Box"
           className="absolute bottom-8 w-3/4 object-contain z-10"
         />
@@ -118,7 +118,7 @@ export default function GiftAnimation({ onComplete }: GiftAnimationProps) {
         {/* Top Lid */}
         <img
           ref={topRef}
-          src="/media/gTop.svg"
+          src="/gTop.svg"
           alt="Gift Lid"
           className="absolute top-0 w-[85%] z-20 object-contain" />
       </div>
