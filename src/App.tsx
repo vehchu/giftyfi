@@ -222,6 +222,9 @@ function SearchApp() {
   return (
     <div className="relative z-10 min-h-[100dvh] flex flex-col justify-center p-6 mx-auto w-full max-w-sm">
       <BackgroundGradient />
+      <p className="fixed bottom-4 left-0 right-0 text-center text-[10px] text-[var(--white)] opacity-30 pointer-events-none select-none z-50">
+        made with 💖
+      </p>
 
       {/* Screen 1: Idle */}
       {(phase === 'idle' || phase === 'searching') && (
