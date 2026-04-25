@@ -29,7 +29,7 @@ function BackgroundGradient() {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 470 290"
         fill="none"
-        className="w-full min-w-[100vw] sm:min-w-[428px] opacity-80"
+        className="w-full min-w-[100vw] sm:min-w-[428px] h-[90vh] sm:h-auto opacity-80"
         preserveAspectRatio="xMidYMax slice"
       >
         <g filter="url(#filter0_fn_16_333)">
